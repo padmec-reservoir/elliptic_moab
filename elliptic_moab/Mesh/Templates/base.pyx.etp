@@ -1,15 +1,7 @@
-{% include 'elliptic.pxd.etp' %}
 
-cdef class MOABCore:
-    cdef Core* inst
+def test_fun():
+    base_str = '{{ a }} {{ b }}'
 
-{% include 'Selector/functions.pyx.etp' %}
-{% include 'Computer/functions.pyx.etp' %}
+    {{ child }}
 
-def execute(pymb):
-    cdef Core* mb = (<MOABCore>pymb).inst
-    cdef Tag tag_handle
-
-    {% if child %}
-    {{ child|indent }}
-    {% endif %}
+    return base_str

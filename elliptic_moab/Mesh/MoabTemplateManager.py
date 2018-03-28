@@ -1,4 +1,4 @@
-from elliptic.Backend.DynamicCompiler import TemplateManagerBase
+from elliptic.Kernel.TreeBuilder import TemplateManagerBase
 
 
 class MoabTemplateManager(TemplateManagerBase):

@@ -57,8 +57,8 @@ class MeshBackend:
         return self.template_manager
 
     def get_backend_builder(self) -> ModuleType:
-        from . import build_functions
-        return build_functions
+        from .BackendBuilder import MoabBackendBuilder
+        return MoabBackendBuilder()
 
     def get_libraries(self):
         return ["MOAB"]
