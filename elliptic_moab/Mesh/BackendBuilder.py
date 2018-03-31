@@ -1,4 +1,5 @@
 from elliptic.Kernel.MeshComputeInterface.BackendBuilder import BackendBuilder
+from elliptic.Kernel.MeshComputeInterface.Expression.Computer import EllipticFunction, EllipticReduce
 
 from elliptic_moab.Mesh.Delegates import *
 
@@ -12,7 +13,7 @@ class MoabBackendBuilder(BackendBuilder):
         return ByEntDelegate(context, dim)
 
     def by_adj_delegate(self, context, bridge_dim: int, to_dim: int):
-        pass
+        return ByAdjDelegate(context, bridge_dim, to_dim)
 
     def where_delegate(self, context, conditions):
         pass
@@ -38,26 +39,3 @@ class MoabBackendBuilder(BackendBuilder):
     def solve_delegate(self, context):
         pass
 
-    def base(self):
-        return "base.pyx.etp"
-
-    def by_ent(self):
-        return "Selector/by_ent.pyx.etp"
-
-    def where(self):
-        return "Selector/where.pyx.etp"
-
-    def map(self):
-        return "Computer/map.pyx.etp"
-
-    def put_field(self):
-        return "Manager/put_field.pyx.etp"
-
-    def create_field(self):
-        return "Declare/create_field.pyx.etp"
-
-    def get_field(self):
-        return "Declare/get_field.pyx.etp"
-
-    def declare_variable(self):
-        return "Declare/declare_variable.pyx.etp"

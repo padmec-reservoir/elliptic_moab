@@ -3,7 +3,15 @@ from elliptic import Elliptic
 from elliptic.Kernel.MeshComputeInterface import MCI
 
 from elliptic_moab.Mesh import MeshBackend
+from elliptic_moab.Mesh.Mesh import MeshBuilder
 from elliptic_moab.Mesh.MoabTemplateManager import MoabTemplateManager
+
+
+@pytest.fixture()
+def mesh():
+    builder = MeshBuilder()
+
+    return builder.read_file('tests/cube_small.h5m')
 
 
 @pytest.fixture()
@@ -14,9 +22,9 @@ def mesh_backend():
 
 
 @pytest.fixture()
-def elliptic(mocker, mesh_backend):
+def elliptic(mocker, mesh, mesh_backend):
     elliptic_ = Elliptic(mesh_backend, mocker.Mock())
-    elliptic_.set_mesh(mocker.sentinel.mesh)
+    elliptic_.set_mesh(mesh)
 
     return elliptic_
 

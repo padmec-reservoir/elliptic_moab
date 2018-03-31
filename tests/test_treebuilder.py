@@ -1,23 +1,14 @@
-from elliptic.Kernel.MeshComputeInterface.Expression import StatementRoot
-from elliptic.Kernel.MeshComputeInterface.Expression.Selector.Dilute import ByEnt
-from elliptic.Kernel.TreeBuilder import TreeBuild
+from elliptic.Kernel.MeshComputeInterface.Expression import Selector
 
 
 class TestTreeBuilder:
 
-    def test_render_single_node(self, template_manager, backend_builder):
-        tree_builder = TreeBuild(template_manager, backend_builder)
-        statement_root = StatementRoot()
+    def test_by_ent(self, mci, elliptic):
+        with mci.root() as root:
+            ents = root(Selector.Dilute.ByEnt, dim=3)
+            vols_adj_ents = internal_ents(Selector.Dilute.ByAdj, bridge_dim=2, to_dim=3)
 
-        built_module = tree_builder.build(statement_root)
 
-        assert built_module.test_fun() == 'x a'
+            #root.export_tree('res1.png')
 
-    def test_render_two_node(self, template_manager, backend_builder):
-        tree_builder = TreeBuild(template_manager, backend_builder)
-        statement_root = StatementRoot()
-        statement_root.children = (ByEnt(2),)
-
-        built_module = tree_builder.build(statement_root)
-
-        assert built_module.test_fun() == 'x a2'
+        elliptic.run_kernel(mci)

@@ -1,7 +1,27 @@
+{% include 'elliptic.pxd.etp' %}
 
-def test_fun():
-    base_str = '{{ a }} {{ b }}'
+cdef class MOABCore:
+    cdef Core* inst
 
-    {{ child }}
+{% include 'Selector/functions.pyx.etp' %}
+{% include 'Computer/functions.pyx.etp' %}
 
-    return base_str
+def execute(pymb):
+    cdef Core* mb = (<MOABCore>pymb).inst
+    cdef MeshTopoUtil* mtu = new MeshTopoUtil(<Interface*>mb)
+
+    {% for handle_name in declare_entityhandles %}
+    cdef EntityHandle {{ handle_name }}
+    {% endfor %}
+
+    {% for range_name in declare_ranges %}
+    cdef Range {{ range_name }}
+    {% endfor %}
+
+    {% for index_name in declare_indexes %}
+    cdef unsigned int {{ index_name }} = 0
+    {% endfor %}
+
+    {% if child %}
+    {{ child|indent }}
+    {% endif %}
