@@ -1,12 +1,9 @@
 {{ current_range }}.clear()
 mtu.get_bridge_adjacencies({{ old_entity }}, {{ bridge_dim }}, {{ to_dim }}, {{ current_range }})
 
-print({{ old_entity }})
-print('[')
 for {{ current_index }} in range(0, {{ current_range }}.size()):
     {{ current_entity }} = {{ current_range }}[{{ current_index }}]
     print(' ', {{ current_entity }})
     {% if child %}
     {{ child|indent }}
     {% endif %}
-print(']')

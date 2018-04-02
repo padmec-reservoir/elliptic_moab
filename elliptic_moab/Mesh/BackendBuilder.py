@@ -19,10 +19,10 @@ class MoabBackendBuilder(BackendBuilder):
         pass
 
     def map_delegate(self, context, mapping_function: 'EllipticFunction', fargs):
-        pass
+        return MapDelegate(context, mapping_function, fargs)
 
     def reduce_delegate(self, context, reducing_function: 'EllipticReduce', fargs):
-        pass
+        return ReduceDelegate(context, reducing_function, fargs)
 
     def put_field_delegate(self, context, field_name: str):
         pass
@@ -39,3 +39,5 @@ class MoabBackendBuilder(BackendBuilder):
     def solve_delegate(self, context):
         pass
 
+    def put_scalar(self, value):
+        return {"value": value}

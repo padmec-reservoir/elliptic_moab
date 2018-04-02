@@ -22,6 +22,10 @@ def execute(pymb):
     cdef unsigned int {{ index_name }} = 0
     {% endfor %}
 
+    {% for var_name in declare_variables %}
+    cdef double {{ var_name }} = 0.0
+    {% endfor %}
+
     {% if child %}
     {{ child|indent }}
     {% endif %}

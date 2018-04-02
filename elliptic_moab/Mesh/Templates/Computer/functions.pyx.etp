@@ -7,5 +7,5 @@ cdef double get_field(Core* mb, EntityHandle ent, Tag tag_handle):
 
     return data
 
-cdef double put_scalar(Core* mb, EntityHandle ent, double value):
+cdef inline double put_scalar(Core* mb, EntityHandle ent, double value):
     return value

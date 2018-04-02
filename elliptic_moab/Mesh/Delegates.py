@@ -20,7 +20,8 @@ class BaseDelegate(MoabDelegate):
     def template_kwargs(self):
         return {'declare_entityhandles': self.context['declare_entityhandle'],
                 'declare_ranges': self.context['declare_range'],
-                'declare_indexes': self.context['declare_index']}
+                'declare_indexes': self.context['declare_index'],
+                'declare_variables': self.context['declare_variable']}
 
     def context_enter(self):
         pass
@@ -56,11 +57,15 @@ class ByEntDelegate(MoabDelegate):
         self.put_value('declare_index', 'by_ent_index' + str(self.unique_id))
         self.put_value('current_index_name', 'by_ent_index' + str(self.unique_id))
 
+        self.put_value('declare_variable', 'by_adj_var' + str(self.unique_id))
+        self.put_value('current_variable_name', 'by_adj_var' + str(self.unique_id))
+
     def context_exit(self):
         self.pop_value('current_entity_dim')
         self.pop_value('current_range_name')
         self.pop_value('current_entity_name')
         self.pop_value('current_index_name')
+        self.pop_value('current_variable_name')
 
 
 class ByAdjDelegate(MoabDelegate):
@@ -93,12 +98,59 @@ class ByAdjDelegate(MoabDelegate):
         self.put_value('declare_index', 'by_adj_index' + str(self.unique_id))
         self.put_value('current_index_name', 'by_adj_index' + str(self.unique_id))
 
+        self.put_value('declare_variable', 'by_adj_var' + str(self.unique_id))
+        self.put_value('current_variable_name', 'by_adj_var' + str(self.unique_id))
+
     def context_exit(self):
         self.pop_value('current_entity_dim')
         self.pop_value('current_range_name')
         self.pop_value('current_entity_name')
         self.pop_value('current_index_name')
+        self.pop_value('current_variable_name')
 
 
 class MapDelegate(MoabDelegate):
-    pass
+
+    def __init__(self, context, mapping_function, fargs):
+        super().__init__(context)
+        self.mapping_function = mapping_function
+        self.fargs = fargs
+
+    def get_template_file(self):
+        return 'Computer/map.pyx.etp'
+
+    def template_kwargs(self):
+        return {'map_function': self.mapping_function.name,
+                'map_args': self.fargs,
+                'current_entity': self.get_value('current_entity_name'),
+                'current_variable': self.get_value('current_variable_name')}
+
+    def context_enter(self):
+        pass
+
+    def context_exit(self):
+        pass
+
+
+class ReduceDelegate(MoabDelegate):
+
+    def __init__(self, context, reducing_function, fargs):
+        super().__init__(context)
+        self.reducing_function = reducing_function
+        self.fargs = fargs
+
+    def get_template_file(self):
+        return 'Computer/reduce.pyx.etp'
+
+    def template_kwargs(self):
+        return {'reduce_function': self.reducing_function.name,
+                'reduce_args': self.fargs,
+                'current_entity': self.get_value('current_entity_name'),
+                'reduced_var': self.context['current_variable_name'][-2]}
+
+    def context_enter(self):
+        self.put_value('declare_variable', 'reduce_var' + str(self.unique_id))
+        self.put_value('current_variable_name', 'reduce_var' + str(self.unique_id))
+
+    def context_exit(self):
+        self.pop_value('current_variable_name')
