@@ -57,8 +57,8 @@ class ByEntDelegate(MoabDelegate):
         self.put_value('declare_index', 'by_ent_index' + str(self.unique_id))
         self.put_value('current_index_name', 'by_ent_index' + str(self.unique_id))
 
-        self.put_value('declare_variable', 'by_adj_var' + str(self.unique_id))
-        self.put_value('current_variable_name', 'by_adj_var' + str(self.unique_id))
+        self.put_value('declare_variable', 'by_ent_var' + str(self.unique_id))
+        self.put_value('current_variable_name', 'by_ent_var' + str(self.unique_id))
 
     def context_exit(self):
         self.pop_value('current_entity_dim')
@@ -74,6 +74,7 @@ class ByAdjDelegate(MoabDelegate):
         super().__init__(context)
         self.bridge_dim = bridge_dim
         self.to_dim = to_dim
+        self.loop_var_prefix = 'by_adj' + str(self.unique_id)
 
     def get_template_file(self):
         return 'Selector/by_adj.pyx.etp'
@@ -84,22 +85,27 @@ class ByAdjDelegate(MoabDelegate):
                 'old_entity': self.context['current_entity_name'][-2],
                 'current_entity': self.get_value('current_entity_name'),
                 'current_range': self.get_value('current_range_name'),
-                'current_index': self.get_value('current_index_name')}
+                'current_index': self.get_value('current_index_name'),
+                'reduced_variables': self.context[self.loop_var_prefix + 'reduced'],
+                'reduce_nested_children': self.context['reduce_nested_children']}
 
     def context_enter(self):
+
+        self.put_value('current_loop', self.loop_var_prefix)
+
         self.put_value('current_entity_dim', str(self.to_dim))
 
-        self.put_value('declare_range', 'by_adj_range' + str(self.unique_id))
-        self.put_value('current_range_name', 'by_adj_range' + str(self.unique_id))
+        self.put_value('declare_range', self.loop_var_prefix + 'range')
+        self.put_value('current_range_name', self.loop_var_prefix + 'range')
 
-        self.put_value('declare_entityhandle', 'by_adj_entity' + str(self.unique_id))
-        self.put_value('current_entity_name', 'by_adj_entity' + str(self.unique_id))
+        self.put_value('declare_entityhandle', self.loop_var_prefix + 'entity')
+        self.put_value('current_entity_name', self.loop_var_prefix + 'entity')
 
-        self.put_value('declare_index', 'by_adj_index' + str(self.unique_id))
-        self.put_value('current_index_name', 'by_adj_index' + str(self.unique_id))
+        self.put_value('declare_index', self.loop_var_prefix + 'index')
+        self.put_value('current_index_name', self.loop_var_prefix + 'index')
 
-        self.put_value('declare_variable', 'by_adj_var' + str(self.unique_id))
-        self.put_value('current_variable_name', 'by_adj_var' + str(self.unique_id))
+        self.put_value('declare_variable', self.loop_var_prefix + 'var')
+        self.put_value('current_variable_name', self.loop_var_prefix + 'var')
 
     def context_exit(self):
         self.pop_value('current_entity_dim')
@@ -107,6 +113,7 @@ class ByAdjDelegate(MoabDelegate):
         self.pop_value('current_entity_name')
         self.pop_value('current_index_name')
         self.pop_value('current_variable_name')
+        self.pop_value('reduce_nested_children')
 
 
 class MapDelegate(MoabDelegate):
@@ -138,6 +145,7 @@ class ReduceDelegate(MoabDelegate):
         super().__init__(context)
         self.reducing_function = reducing_function
         self.fargs = fargs
+        self.current_loop = ""
 
     def get_template_file(self):
         return 'Computer/reduce.pyx.etp'
@@ -145,12 +153,22 @@ class ReduceDelegate(MoabDelegate):
     def template_kwargs(self):
         return {'reduce_function': self.reducing_function.name,
                 'reduce_args': self.fargs,
-                'current_entity': self.get_value('current_entity_name'),
-                'reduced_var': self.context['current_variable_name'][-2]}
+                'current_variable': self.get_value('current_variable_name'),
+                'reduced_variable': self.get_value('reduced_variable')}
 
     def context_enter(self):
+        self.current_loop = self.get_value('current_loop')
+
         self.put_value('declare_variable', 'reduce_var' + str(self.unique_id))
-        self.put_value('current_variable_name', 'reduce_var' + str(self.unique_id))
+        self.put_value('reduced_variable', 'reduce_var' + str(self.unique_id))
+        self.put_value(self.current_loop + 'reduced', 'reduce_var' + str(self.unique_id))
+
+        # For nested reduces:
+        self.pop_value('current_loop')
 
     def context_exit(self):
-        self.pop_value('current_variable_name')
+        self.pop_value('reduced_variable')
+
+        # For other reduces in the same loop level:
+        self.put_value('current_loop', self.current_loop)
+        self.put_value('reduce_nested_children', self.child)

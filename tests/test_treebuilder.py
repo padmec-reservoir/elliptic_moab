@@ -14,6 +14,7 @@ class TestTreeBuilder:
 
             one = vols_adj_ents(Map, mapping_function=PutScalar(value=1.0))
             count = one(Reduce, reducing_function=Sum(initial_value=0.0))
+            count_other = vols_adj_ents(Reduce, reducing_function=Sum(initial_value=0.0))
 
             #root.export_tree('res1.png')
 

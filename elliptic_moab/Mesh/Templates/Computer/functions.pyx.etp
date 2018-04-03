@@ -9,3 +9,6 @@ cdef double get_field(Core* mb, EntityHandle ent, Tag tag_handle):
 
 cdef inline double put_scalar(Core* mb, EntityHandle ent, double value):
     return value
+
+cdef inline double reduce_sum(Core* mb, double value, double acc):
+    return value + acc

@@ -1,9 +1,16 @@
 {{ current_range }}.clear()
 mtu.get_bridge_adjacencies({{ old_entity }}, {{ bridge_dim }}, {{ to_dim }}, {{ current_range }})
 
+{% for reduced_variable in reduced_variables %}
+{{ reduced_variable }} = 0.0
+{% endfor %}
+
 for {{ current_index }} in range(0, {{ current_range }}.size()):
     {{ current_entity }} = {{ current_range }}[{{ current_index }}]
-    print(' ', {{ current_entity }})
     {% if child %}
     {{ child|indent }}
     {% endif %}
+
+{% for reduced_nested_child in reduce_nested_children %}
+{{ reduced_nested_child }}
+{% endfor %}

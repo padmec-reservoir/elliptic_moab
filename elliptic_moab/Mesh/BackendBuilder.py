@@ -41,3 +41,6 @@ class MoabBackendBuilder(BackendBuilder):
 
     def put_scalar(self, value):
         return {"value": value}
+
+    def reduce_sum(self, initial_value):
+        return {"initial_value": initial_value}
