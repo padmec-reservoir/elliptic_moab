@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-requirements = ['elliptic', 'pymoab']
+requirements = ['elliptic', 'pymoab', 'elliptic_meshql']
 
 setup_requirements = ['pytest-runner', ]
 
