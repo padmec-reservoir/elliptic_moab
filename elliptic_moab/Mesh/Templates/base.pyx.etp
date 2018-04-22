@@ -14,6 +14,10 @@ def execute(pymb):
     cdef EntityHandle {{ handle_name }}
     {% endfor %}
 
+    {% for tag_name in declare_tags %}
+    cdef Tag {{ tag_name }}_tag
+    {% endfor %}
+
     {% for range_name in declare_ranges %}
     cdef Range {{ range_name }}
     {% endfor %}
@@ -24,6 +28,10 @@ def execute(pymb):
 
     {% for var_name in declare_variables %}
     cdef double {{ var_name }} = 0.0
+    {% endfor %}
+
+    {% for tag_name in declare_tags %}
+    mb.tag_get_handle("{{ tag_name }}", {{ tag_name }}_tag)
     {% endfor %}
 
     {% if child %}

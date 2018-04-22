@@ -15,7 +15,7 @@ class ComputerImplementation(ComputerImplementationBase):
 
             def template_kwargs(self):
                 return {'map_function': fun.fun,
-                        'map_args': fun.fargs,
+                        'map_args': fun.fargs.items(),
                         'current_entity': self.context.get_value('current_entity_name'),
                         'current_variable': self.context.get_value('current_variable')}
 
@@ -46,6 +46,7 @@ class ComputerImplementation(ComputerImplementationBase):
 
             def context_enter(self):
                 self.current_loop = self.context.get_value('current_loop')
+                self.current_entity = self.context.get_value('current_entity_name')
 
                 self.context.put_value('declare_variable', 'reduce_var' + str(self.unique_id))
                 self.context.put_value(self.current_loop + 'reduced', 'reduce_var' + str(self.unique_id))
@@ -54,11 +55,17 @@ class ComputerImplementation(ComputerImplementationBase):
                 # For nested reduces:
                 self.context.pop_value('current_loop')
 
+                # For nested maps and stores:
+                self.context.pop_value('current_entity_name')
+
             def context_exit(self):
                 self.context.pop_value('current_variable')
 
                 # For other reduces in the same loop level:
                 self.context.put_value('current_loop', self.current_loop)
                 self.context.put_value(self.current_loop + 'nested_children', self.child)
+
+                # For maps and stores in the same loop level:
+                self.context.put_value('current_entity_name', self.current_entity)
 
         return ReduceDelegate

@@ -19,7 +19,8 @@ class MeshQLImplementation(ComputerImplementation, ManagerImplementation, Select
                 return {'declare_entityhandles': self.context.context['declare_entityhandle'],
                         'declare_ranges': self.context.context['declare_range'],
                         'declare_indexes': self.context.context['declare_index'],
-                        'declare_variables': self.context.context['declare_variable']}
+                        'declare_variables': self.context.context['declare_variable'],
+                        'declare_tags': set(self.context.context['declare_tags'])}
 
             def context_enter(self):
                 pass

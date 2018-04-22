@@ -1,4 +1,8 @@
+import time
+
 from elliptic.Kernel.DSL import DSL
+from elliptic_meshql.MapFunctions import SetScalar
+from elliptic_meshql.ReduceFunctions import Sum
 from elliptic_meshql.MeshQL import MeshQLContract
 from pymoab import core
 
@@ -18,13 +22,18 @@ class TestTreeBuilder:
         mb.load_file('cube_small.h5m')
 
         with dsl.root() as root:
-            ents = root.ByEnt(3)
-            vols_adj_ents = ents.ByAdj(2, 3)
+            ents = root.ByEnt(3)\
+                .ByAdj(2, 3)\
+                .Map(SetScalar(1.0))\
+                .Reduce(Sum(initial_value=0.0))\
+                .Store("TEST_TAG")
 
             #one = vols_adj_ents(Map, mapping_function=PutScalar(value=1.0))
             #count = one(Reduce, reducing_function=Sum(initial_value=0.0))
             #count2 = count(Reduce, reducing_function=Sum(initial_value=0.0))
 
-            #root.export_tree('res1.png')
+            root.expr.export_tree('res1.png')
 
         dsl.get_built_module().execute(mb)
+
+        mb.write_file('cube_small_tagged.h5m')
