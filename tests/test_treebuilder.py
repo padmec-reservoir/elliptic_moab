@@ -25,7 +25,8 @@ class TestTreeBuilder:
             ents = root.ByEnt(3)\
                 .ByAdj(2, 3)\
                 .Map(SetScalar(1.0))\
-                .Reduce(Sum(initial_value=0.0))\
+                .ByAdj(2, 3).Map(SetScalar(1.0))\
+                .Reduce(Sum(initial_value=0.0)).Reduce(Sum(initial_value=0.0)).Reduce(Sum(initial_value=0.0))\
                 .Store("TEST_TAG")
 
             #one = vols_adj_ents(Map, mapping_function=PutScalar(value=1.0))
@@ -34,6 +35,9 @@ class TestTreeBuilder:
 
             root.expr.export_tree('res1.png')
 
-        dsl.get_built_module().execute(mb)
+        t0 = time.time()
+        for i in range(1000):
+            dsl.get_built_module().execute(mb)
+        print(f'{(time.time() - t0)/1000}')
 
-        mb.write_file('cube_small_tagged.h5m')
+        #mb.write_file('cube_small_tagged.h5m')

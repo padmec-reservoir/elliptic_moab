@@ -6,8 +6,8 @@ cdef class MOABCore:
 {% include 'Selector/functions.pyx.etp' %}
 {% include 'Computer/functions.pyx.etp' %}
 
-def execute(pymb):
-    cdef Core* mb = (<MOABCore>pymb).inst
+
+cdef void internal_execute(Core* mb):
     cdef MeshTopoUtil* mtu = new MeshTopoUtil(<Interface*>mb)
 
     {% for handle_name in declare_entityhandles %}
@@ -37,3 +37,11 @@ def execute(pymb):
     {% if child %}
     {{ child|indent }}
     {% endif %}
+
+
+
+def execute(pymb):
+    cdef Core* mb = (<MOABCore>pymb).inst
+    cdef MeshTopoUtil* mtu = new MeshTopoUtil(<Interface*>mb)
+
+    internal_execute(mb)
